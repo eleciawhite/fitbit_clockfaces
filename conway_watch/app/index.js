@@ -8,6 +8,17 @@ import document from "document";
 import { preferences } from "user-settings";
 import * as util from "../common/utils";
 
+import { display } from "display";
+
+display.addEventListener("change", function() {
+  if (display.on) {
+    init_conwayclock();
+    updateConway = true;
+  } else {
+    updateConway = false;
+  }
+})
+
 // Update the clock every minute
 clock.granularity = "seconds";
 
@@ -21,8 +32,6 @@ const arraysize = 10;
 const pixwidth = 30;
 const pixheight = 30;
 
-init_conway();
-init_display();
 
 function init_conway() {
     for (var i=0; i<arraysize; i++) {
@@ -41,17 +50,15 @@ function set_conway(x, y, on) {
     
 }
 function init_display() {
-  console.log("init_display")
   for (var i = 0; i < arraysize; i++) {
     screenPix[i] = [];
     var pixname = "p" + i;
     for (var j=0; j< arraysize; j++) {
       screenPix[i][j] = document.getElementById(pixname + j); 
-      screenPix[i][j].width = pixwidth;
-      screenPix[i][j].height = pixheight;
-      screenPix[i][j].x = i * pixwidth;
-      screenPix[i][j].y = j * pixheight;
-      screenPix[i][j].style.opacity = 0.5; 
+      screenPix[i][j].r = pixwidth*0.8;
+      screenPix[i][j].cx = i * pixwidth;
+      screenPix[i][j].cy = j * pixheight;
+      screenPix[i][j].style.opacity = 0; 
     }
   }
 }
@@ -138,7 +145,7 @@ function DisplayDrawPixel (x, y, on)
   x = x.toFixed()
   y = y.toFixed()
   if (on) {
-    screenPix[x][y].style.opacity = 1;
+    screenPix[x][y].style.opacity = 0.7;
   } else {
     screenPix[x][y].style.opacity = 0;    
   }
@@ -163,7 +170,15 @@ function DisplayDrawDigit( x, y, digit )
     return x + fontwidth + 1;
 }
 
-
+var displayTime = 0;
+var updateConway = true;
+init_conwayclock();
+function init_conwayclock() 
+{
+  init_conway();
+  init_display();
+  displayTime = 0;
+}
 function display_time(evt)
 {
   let today = evt.date;
@@ -177,27 +192,20 @@ function display_time(evt)
   }
   let mins = util.zeroPad(today.getMinutes());
   //myLabel.text = `${hours}:${mins}`;
-  var x = 1;
+  var x = 0;
+
   x = DisplayDrawDigit(x, 0, hours/10);
   x = DisplayDrawDigit(x, 0, hours%10);
-  x = 2
-  x = DisplayDrawDigit(x, 5, mins/10);
+  x = 3
+  x = DisplayDrawDigit(x, 5, Math.floor(mins/10));
   x = DisplayDrawDigit(x, 5, mins%10);  
 }
-var displayTime = true;
 // Update the <text> element every tick with the current time
 clock.ontick = (evt) => {
-  if (displayTime == true) {
-//    display_time(evt);
-    displayTime = false;  
-  var x = 0
-  x = DisplayDrawDigit(x, 0, 1);
-  x = DisplayDrawDigit(x, 0, 2);
-
-  x = 3
-  x = DisplayDrawDigit(x, 5, 2);
-  x = DisplayDrawDigit(x, 5, 8);
-  } else {
+  if (updateConway && displayTime > 1) {
     update_conway();
+  } else {
+    display_time(evt);
   }
+  displayTime++;
 }
