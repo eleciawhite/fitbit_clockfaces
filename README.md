@@ -1,2 +1,2 @@
 # fitbit_clockfaces
-Clock faces for the Fitbit Versa 
+Clock faces for the Fitbit Versa.

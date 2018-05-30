@@ -20,8 +20,8 @@ const pixwidth = 30;
 const pixheight = 30;
 
 // These variables hold the game of life and it representation on the screen
-var conwaycells = [];
-var conwaypix = [];
+var conwaycells = new Array(arraysize);
+var conwaypix = new Array(arraysize);
 
 // *************************** CONWAY ***********************************/
 
@@ -29,9 +29,10 @@ var conwaypix = [];
 // Create a grid of pixels and set their sizes programmatically
 function first_conway_init() {
   console.log("First Conway Init");
+
   for (var i = 0; i < arraysize; i++) {
-    conwaycells[i] = [];
-    conwaypix[i] = [];
+    conwaycells[i] = new Array(arraysize);
+    conwaypix[i] = new Array(arraysize);
     var pixname = "p" + i;
     for (var j = 0; j < arraysize; j++) {
       conwaycells[i][j] = 0;
@@ -82,7 +83,6 @@ function update_conway() {
 
     return amount;
   }
-
   for (var i = 0; i < arraysize; i++) {
     for (var j = 0; j < arraysize; j++) {
       var alive = 0,
